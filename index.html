@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediCare — Système de Gestion Médicale</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════ */
+/* MEDICARE — DESIGN SYSTEM                          */
+/* ═══════════════════════════════════════════════════ */
+
+:root {
+  --bg: #0f1117;
+  --bg2: #171b26;
+  --bg3: #1e2333;
+  --border: #2a3040;
+  --text: #e8ecf0;
+  --text-muted: #8892a4;
+  --accent: #00c8a0;
+  --accent2: #3b82f6;
+  --accent3: #f59e0b;
+  --accent4: #ef4444;
+  --accent5: #a855f7;
+  --sidebar-w: 260px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 14px;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ─── SCREENS ─── */
+.screen { display: none; height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ─── LOGIN ─── */
+#screen-login.active { display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+
+.login-bg { position: absolute; inset: 0; }
+.login-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+}
+.orb1 { width: 500px; height: 500px; background: radial-gradient(circle, #00c8a0, transparent); top: -150px; right: -100px; animation: drift1 8s ease-in-out infinite alternate; }
+.orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #3b82f6, transparent); bottom: -100px; left: -100px; animation: drift2 10s ease-in-out infinite alternate; }
+.orb3 { width: 300px; height: 300px; background: radial-gradient(circle, #a855f7, transparent); top: 50%; left: 40%; animation: drift1 12s ease-in-out infinite alternate; }
+
+@keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(30px,-30px); } }
+@keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-20px,20px); } }
+
+.login-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 440px;
+  padding: 20px;
+}
+
+.login-brand { text-align: center; }
+.login-brand .brand-icon { font-size: 48px; display: block; margin-bottom: 8px; filter: drop-shadow(0 0 20px #00c8a0); }
+.login-brand h1 { font-family: var(--font-head); font-size: 36px; font-weight: 800; letter-spacing: -1px; background: linear-gradient(135deg, #00c8a0, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.login-brand p { color: var(--text-muted); font-size: 13px; }
+
+.login-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+.login-card h2 { font-family: var(--font-head); font-size: 22px; font-weight: 700; margin-bottom: 20px; text-align: center; }
+
+.role-selector { display: flex; gap: 6px; margin-bottom: 20px; background: var(--bg3); border-radius: 10px; padding: 4px; }
+.role-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; color: var(--text-muted); border-radius: 8px; cursor: pointer; font-family: var(--font-body); font-size: 12px; font-weight: 500; transition: all 0.2s; }
+.role-btn.active { background: var(--accent); color: #000; font-weight: 700; }
+.role-btn:hover:not(.active) { background: var(--bg); color: var(--text); }
+
+.login-hint { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 12px; }
+
+/* ─── APP LAYOUT ─── */
+.app-layout { display: flex; height: 100vh; width: 100%; overflow: hidden; }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 800;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+}
+
+.brand-icon-sm { font-size: 20px; }
+
+.sidebar-user {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #3b82f6);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #000;
+  flex-shrink: 0;
+}
+.med-avatar { background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff; }
+.ass-avatar { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; }
+.adm-avatar { background: linear-gradient(135deg, #a855f7, #ec4899); color: #fff; }
+
+.user-name { font-size: 13px; font-weight: 600; }
+.user-role { font-size: 11px; color: var(--accent); }
+
+.sidebar-nav { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.18s;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: linear-gradient(90deg, rgba(0,200,160,0.15), transparent); color: var(--accent); border-left: 2px solid var(--accent); }
+.nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+.btn-logout {
+  margin: 16px 20px 0;
+  padding: 10px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.2); }
+
+/* ─── MAIN CONTENT ─── */
+.main-content { flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--bg); }
+
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-header h1 { font-family: var(--font-head); font-size: 26px; font-weight: 700; }
+.page-header p { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.card h3 { font-family: var(--font-head); font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+
+/* ─── STATS GRID ─── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.accent-blue::before { background: var(--accent2); }
+.accent-green::before { background: var(--accent); }
+.accent-orange::before { background: var(--accent3); }
+.accent-purple::before { background: var(--accent5); }
+.accent-red::before { background: var(--accent4); }
+
+.stat-icon { font-size: 22px; margin-bottom: 8px; }
+.stat-val { font-family: var(--font-head); font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--text-muted); }
+
+/* ─── GRID ─── */
+.grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ─── TABS ─── */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ─── BUTTONS ─── */
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary:hover { background: #00e6b8; transform: translateY(-1px); }
+.btn-primary.full { width: 100%; justify-content: center; padding: 12px; }
+.btn-primary.small { padding: 6px 12px; font-size: 12px; }
+
+.btn-secondary {
+  background: var(--bg3);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-secondary.small { padding: 6px 12px; font-size: 12px; }
+
+.btn-icon {
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.18s;
+  margin-right: 4px;
+}
+.btn-icon:hover { border-color: var(--accent); }
+.btn-icon.danger:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.1); }
+.btn-icon.success:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,200,160,0.1); }
+
+.btn-link { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 13px; padding: 0; margin-top: 8px; font-family: var(--font-body); }
+.btn-link:hover { text-decoration: underline; }
+
+/* ─── FORMS ─── */
+.form-card { }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+input, select, textarea {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  transition: border-color 0.2s;
+  outline: none;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,200,160,0.12); }
+select option { background: var(--bg3); }
+textarea { resize: vertical; }
+
+.form-actions { display: flex; gap: 12px; margin-top: 20px; }
+.mt { margin-top: 16px; }
+
+.search-input { width: 280px; }
+.filter-bar { margin-bottom: 16px; }
+.filter-bar select { width: 180px; }
+
+/* ─── TABLE ─── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 600; padding: 0 12px 12px; border-bottom: 1px solid var(--border); }
+.data-table td { padding: 12px; border-bottom: 1px solid rgba(42,48,64,0.5); font-size: 13px; }
+.data-table tr:hover td { background: var(--bg3); }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* ─── BADGES ─── */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-confirmed { background: rgba(0,200,160,0.15); color: var(--accent); border: 1px solid rgba(0,200,160,0.3); }
+.badge-pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+.badge-green { background: rgba(0,200,160,0.15); color: var(--accent); border: 1px solid rgba(0,200,160,0.3); }
+.badge-red { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+
+/* ─── RDV CARD ─── */
+.rdv-next { display: flex; gap: 16px; align-items: center; }
+.rdv-date-big { background: var(--accent); color: #000; border-radius: 10px; padding: 12px 16px; text-align: center; }
+.rdv-date-big .day { display: block; font-family: var(--font-head); font-size: 28px; font-weight: 800; line-height: 1; }
+.rdv-date-big .month { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.rdv-info strong { font-size: 15px; display: block; margin-bottom: 4px; }
+.rdv-info p { color: var(--text-muted); font-size: 13px; margin-bottom: 8px; }
+
+/* ─── ORDONNANCE ─── */
+.ordo-preview { display: flex; flex-direction: column; gap: 8px; }
+.ordo-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.pill-icon { font-size: 15px; }
+
+.ordo-card { }
+.ordo-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.ordo-header h3 { font-family: var(--font-head); font-size: 15px; font-weight: 600; }
+.ordo-header p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.ordo-meds { display: flex; flex-direction: column; gap: 12px; }
+.med-row { display: flex; align-items: flex-start; gap: 12px; }
+.pill-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.med-row strong { font-size: 13px; display: block; }
+.med-row p { font-size: 12px; color: var(--text-muted); }
+
+/* ─── TIMELINE ─── */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.timeline-item { position: relative; margin-bottom: 20px; }
+.timeline-dot { position: absolute; left: -20px; top: 16px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg); }
+.timeline-dot.blue { background: var(--accent2); }
+.timeline-dot.green { background: var(--accent); }
+.timeline-dot.orange { background: var(--accent3); }
+.timeline-date { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.timeline-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.timeline-content p { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+
+/* ─── SCHEDULE ─── */
+.schedule-list { display: flex; flex-direction: column; gap: 12px; }
+.schedule-item { display: flex; align-items: center; gap: 16px; padding: 12px; background: var(--bg3); border-radius: var(--radius-sm); }
+.sched-time { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--accent); min-width: 55px; }
+.sched-info { flex: 1; }
+.sched-info strong { font-size: 14px; }
+.sched-info p { font-size: 12px; color: var(--text-muted); }
+
+/* ─── CALENDAR ─── */
+.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.calendar-header h3 { font-family: var(--font-head); font-size: 16px; font-weight: 600; }
+.week-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.day-col { display: flex; flex-direction: column; gap: 6px; }
+.day-header { text-align: center; font-size: 12px; font-weight: 700; color: var(--text-muted); padding: 8px; background: var(--bg3); border-radius: 6px; text-transform: uppercase; }
+.day-slot { padding: 8px 10px; border-radius: 6px; font-size: 12px; }
+.slot-busy { background: rgba(0,200,160,0.12); border: 1px solid rgba(0,200,160,0.25); color: var(--accent); }
+.slot-free { background: var(--bg3); border: 1px dashed var(--border); color: var(--text-muted); }
+
+/* ─── MED ENTRY ─── */
+.med-grid { grid-template-columns: repeat(4, 1fr); }
+.med-entry { background: var(--bg3); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); }
+
+/* ─── TASK LIST ─── */
+.task-list { display: flex; flex-direction: column; gap: 10px; }
+.task-item { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 10px; background: var(--bg3); border-radius: var(--radius-sm); }
+.task-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.task-dot.orange { background: var(--accent3); }
+.task-dot.red { background: var(--accent4); }
+.task-dot.blue { background: var(--accent2); }
+
+/* ─── SMS ─── */
+.sms-history { display: flex; flex-direction: column; gap: 10px; }
+.sms-item { padding: 10px; background: var(--bg3); border-radius: var(--radius-sm); }
+.sms-to { font-size: 13px; font-weight: 600; }
+.sms-msg { font-size: 12px; color: var(--text-muted); }
+.sms-date { font-size: 11px; color: var(--accent); margin-top: 4px; }
+
+/* ─── VALIDATION ─── */
+.validation-list { display: flex; flex-direction: column; gap: 12px; }
+.validation-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--bg3); border-radius: var(--radius-sm); gap: 20px; }
+.val-info strong { font-size: 13px; font-weight: 600; }
+.val-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.val-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ─── ACTIVITY LOG ─── */
+.activity-log { display: flex; flex-direction: column; gap: 8px; }
+.log-item { display: flex; gap: 12px; font-size: 12px; padding: 8px; border-radius: 6px; }
+.log-item:hover { background: var(--bg3); }
+.log-time { color: var(--accent); font-weight: 600; min-width: 40px; }
+.log-event { color: var(--text-muted); }
+
+/* ─── DONUT MOCK ─── */
+.donut-chart-mock { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; }
+.donut-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.donut-color { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── NOTIFICATIONS ─── */
+.notif-list { display: flex; flex-direction: column; gap: 10px; }
+.notif-item { padding: 12px; border-radius: var(--radius-sm); }
+.notif-item.info { background: rgba(59,130,246,0.1); border-left: 3px solid var(--accent2); }
+.notif-item.warning { background: rgba(245,158,11,0.1); border-left: 3px solid var(--accent3); }
+.notif-item.success { background: rgba(0,200,160,0.1); border-left: 3px solid var(--accent); }
+.notif-item strong { font-size: 13px; display: block; margin-bottom: 3px; }
+.notif-item p { font-size: 12px; color: var(--text-muted); }
+
+/* ─── DOSSIER ─── */
+.dossier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dossier-section h4 { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.dossier-section p { font-size: 13px; margin-bottom: 6px; color: var(--text-muted); }
+.dossier-section p strong { color: var(--text); }
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: slideUp 0.25s ease;
+}
+.modal-large { max-width: 640px; }
+
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.modal-header h3 { font-family: var(--font-head); font-size: 17px; font-weight: 700; }
+.modal-header button { background: var(--bg3); border: 1px solid var(--border); color: var(--text-muted); width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+.modal-body { padding: 20px 24px; max-height: 60vh; overflow-y: auto; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--border); }
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow);
+  z-index: 9999;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 360px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: var(--accent); color: var(--accent); }
+.toast.error { border-color: #ef4444; color: #ef4444; }
+.toast.info { border-color: var(--accent2); color: var(--accent2); }
+.toast.warning { border-color: var(--accent3); color: var(--accent3); }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4155; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCREEN: LOGIN -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg">
+    <div class="login-orb orb1"></div>
+    <div class="login-orb orb2"></div>
+    <div class="login-orb orb3"></div>
+  </div>
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="brand-icon">✚</div>
+      <h1>MediCare</h1>
+      <p>Système de Gestion Médicale</p>
+    </div>
+    <div class="login-card">
+      <h2>Connexion</h2>
+      <div class="role-selector">
+        <button class="role-btn active" data-role="patient">Patient</button>
+        <button class="role-btn" data-role="medecin">Médecin</button>
+        <button class="role-btn" data-role="assistant">Assistant</button>
+        <button class="role-btn" data-role="admin">Admin</button>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="votre@email.com" value="patient@demo.com">
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="login-password" placeholder="••••••••" value="demo1234">
+      </div>
+      <button class="btn-primary full" onclick="doLogin()">Se connecter</button>
+      <p class="login-hint">Cliquez sur un rôle pour démo rapide</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCREEN: REGISTER -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-register" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar" id="register-sidebar"></aside>
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Créer un Compte</h1>
+        <p>Inscription d'un nouveau compte patient</p>
+      </div>
+      <div class="card form-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" placeholder="Nom de famille">
+          </div>
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" placeholder="Prénom">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="email@exemple.com">
+          </div>
+          <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label>Date de naissance</label>
+            <input type="date">
+          </div>
+          <div class="form-group">
+            <label>Groupe sanguin</label>
+            <select>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-secondary" onclick="navigate('login')">Annuler</button>
+          <button class="btn-primary" onclick="showToast('Compte créé avec succès !','success')">Créer le compte</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCREEN: PATIENT DASHBOARD -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-patient" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span class="brand-icon-sm">✚</span> MediCare</div>
+      <div class="sidebar-user">
+        <div class="avatar">PA</div>
+        <div>
+          <div class="user-name">Ahmed Ben Ali</div>
+          <div class="user-role">Patient</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" onclick="showTab('patient','dashboard',this)"><span class="nav-icon">⊞</span>Tableau de bord</a>
+        <a href="#" class="nav-item" onclick="showTab('patient','rdv',this)"><span class="nav-icon">📅</span>Mes Rendez-vous</a>
+        <a href="#" class="nav-item" onclick="showTab('patient','historique',this)"><span class="nav-icon">📋</span>Historique</a>
+        <a href="#" class="nav-item" onclick="showTab('patient','ordonnances',this)"><span class="nav-icon">💊</span>Ordonnances</a>
+        <a href="#" class="nav-item" onclick="showTab('patient','analyses',this)"><span class="nav-icon">🔬</span>Analyses</a>
+      </nav>
+      <button class="btn-logout" onclick="navigate('login')">Déconnexion</button>
+    </aside>
+    <main class="main-content">
+      <!-- PATIENT: DASHBOARD TAB -->
+      <div id="patient-tab-dashboard" class="tab-content active">
+        <div class="page-header">
+          <h1>Bonjour, Ahmed 👋</h1>
+          <p>Voici un résumé de votre santé aujourd'hui</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card accent-blue">
+            <div class="stat-icon">📅</div>
+            <div class="stat-val">3</div>
+            <div class="stat-label">Rendez-vous à venir</div>
+          </div>
+          <div class="stat-card accent-green">
+            <div class="stat-icon">💊</div>
+            <div class="stat-val">2</div>
+            <div class="stat-label">Ordonnances actives</div>
+          </div>
+          <div class="stat-card accent-orange">
+            <div class="stat-icon">🔬</div>
+            <div class="stat-val">1</div>
+            <div class="stat-label">Analyses en attente</div>
+          </div>
+          <div class="stat-card accent-purple">
+            <div class="stat-icon">🩸</div>
+            <div class="stat-val">A+</div>
+            <div class="stat-label">Groupe sanguin</div>
+          </div>
+        </div>
+        <div class="grid-2col">
+          <div class="card">
+            <h3>Prochain rendez-vous</h3>
+            <div class="rdv-next">
+              <div class="rdv-date-big">
+                <span class="day">28</span>
+                <span class="month">Avr</span>
+              </div>
+              <div class="rdv-info">
+                <strong>Dr. Karim Mansouri</strong>
+                <p>Cardiologue — 10h00</p>
+                <span class="badge badge-confirmed">Confirmé</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Dernière ordonnance</h3>
+            <div class="ordo-preview">
+              <div class="ordo-item"><span class="pill-icon">💊</span>Paracétamol 500mg — 3x/jour</div>
+              <div class="ordo-item"><span class="pill-icon">💊</span>Amoxicilline 1g — 2x/jour</div>
+              <div class="ordo-item"><span class="pill-icon">💊</span>Ibuprofène 400mg — si douleur</div>
+              <button class="btn-link" onclick="showTab('patient','ordonnances',null)">Voir toutes →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATIENT: RDV TAB -->
+      <div id="patient-tab-rdv" class="tab-content">
+        <div class="page-header">
+          <h1>Mes Rendez-vous</h1>
+          <button class="btn-primary" onclick="openModal('modal-rdv')">+ Nouveau RDV</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Médecin</th><th>Spécialité</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>28 Avr 2026 — 10h00</td>
+                <td>Dr. Karim Mansouri</td>
+                <td>Cardiologie</td>
+                <td><span class="badge badge-confirmed">Confirmé</span></td>
+                <td><button class="btn-icon" onclick="openModal('modal-rdv-edit')">✏️</button><button class="btn-icon danger" onclick="confirmCancel()">✕</button></td>
+              </tr>
+              <tr>
+                <td>05 Mai 2026 — 14h30</td>
+                <td>Dr. Sonia Trabelsi</td>
+                <td>Dermatologie</td>
+                <td><span class="badge badge-pending">En attente</span></td>
+                <td><button class="btn-icon" onclick="openModal('modal-rdv-edit')">✏️</button><button class="btn-icon danger" onclick="confirmCancel()">✕</button></td>
+              </tr>
+              <tr>
+                <td>12 Mai 2026 — 09h00</td>
+                <td>Dr. Mehdi Hajji</td>
+                <td>Généraliste</td>
+                <td><span class="badge badge-pending">En attente</span></td>
+                <td><button class="btn-icon" onclick="openModal('modal-rdv-edit')">✏️</button><button class="btn-icon danger" onclick="confirmCancel()">✕</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PATIENT: HISTORIQUE TAB -->
+      <div id="patient-tab-historique" class="tab-content">
+        <div class="page-header"><h1>Historique médical</h1></div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot blue"></div>
+            <div class="timeline-content card">
+              <div class="timeline-date">15 Mars 2026</div>
+              <h4>Consultation — Dr. Mansouri</h4>
+              <p>Bilan cardiaque de routine. Tension artérielle normale. ECG satisfaisant.</p>
+              <span class="badge badge-confirmed">Terminé</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot green"></div>
+            <div class="timeline-content card">
+              <div class="timeline-date">28 Fév 2026</div>
+              <h4>Analyse sanguine — Laboratoire Central</h4>
+              <p>NFS, glycémie, cholestérol. Résultats dans les normes.</p>
+              <span class="badge badge-green">Résultats disponibles</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot orange"></div>
+            <div class="timeline-content card">
+              <div class="timeline-date">10 Jan 2026</div>
+              <h4>Consultation — Dr. Trabelsi</h4>
+              <p>Dermatite légère. Traitement prescrit sur 2 semaines.</p>
+              <span class="badge badge-confirmed">Terminé</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATIENT: ORDONNANCES TAB -->
+      <div id="patient-tab-ordonnances" class="tab-content">
+        <div class="page-header"><h1>Mes Ordonnances</h1></div>
+        <div class="grid-cards">
+          <div class="card ordo-card">
+            <div class="ordo-header">
+              <div>
+                <h3>Ordonnance #ORD-2026-042</h3>
+                <p>Dr. Mansouri — 15 Mars 2026</p>
+              </div>
+              <button class="btn-secondary small" onclick="showToast('Export PDF en cours...','info')">📄 PDF</button>
+            </div>
+            <div class="ordo-meds">
+              <div class="med-row"><span class="pill-dot"></span><div><strong>Paracétamol 500mg</strong><p>3 comprimés/jour pendant 7 jours</p></div></div>
+              <div class="med-row"><span class="pill-dot"></span><div><strong>Amoxicilline 1g</strong><p>2 comprimés/jour pendant 5 jours</p></div></div>
+            </div>
+          </div>
+          <div class="card ordo-card">
+            <div class="ordo-header">
+              <div>
+                <h3>Ordonnance #ORD-2026-019</h3>
+                <p>Dr. Trabelsi — 10 Jan 2026</p>
+              </div>
+              <button class="btn-secondary small" onclick="showToast('Export PDF en cours...','info')">📄 PDF</button>
+            </div>
+            <div class="ordo-meds">
+              <div class="med-row"><span class="pill-dot"></span><div><strong>Hydrocortisone 1% crème</strong><p>Application locale 2x/jour</p></div></div>
+              <div class="med-row"><span class="pill-dot"></span><div><strong>Cétirizine 10mg</strong><p>1 comprimé/soir pendant 14 jours</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATIENT: ANALYSES TAB -->
+      <div id="patient-tab-analyses" class="tab-content">
+        <div class="page-header"><h1>Mes Analyses</h1></div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Type</th><th>Prescrit par</th><th>Date</th><th>Laboratoire</th><th>Statut</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>NFS + Glycémie</td>
+                <td>Dr. Mansouri</td>
+                <td>28 Fév 2026</td>
+                <td>Bio-Labo Tunis</td>
+                <td><span class="badge badge-green">Disponible</span></td>
+              </tr>
+              <tr>
+                <td>Bilan lipidique</td>
+                <td>Dr. Hajji</td>
+                <td>02 Avr 2026</td>
+                <td>—</td>
+                <td><span class="badge badge-pending">En attente</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCREEN: MÉDECIN DASHBOARD -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-medecin" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span class="brand-icon-sm">✚</span> MediCare</div>
+      <div class="sidebar-user">
+        <div class="avatar med-avatar">KM</div>
+        <div>
+          <div class="user-name">Dr. Karim Mansouri</div>
+          <div class="user-role">Cardiologue</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" onclick="showTab('medecin','dashboard',this)"><span class="nav-icon">⊞</span>Tableau de bord</a>
+        <a href="#" class="nav-item" onclick="showTab('medecin','planning',this)"><span class="nav-icon">🗓</span>Planning</a>
+        <a href="#" class="nav-item" onclick="showTab('medecin','dossiers',this)"><span class="nav-icon">📁</span>Dossiers Patients</a>
+        <a href="#" class="nav-item" onclick="showTab('medecin','ordonnances',this)"><span class="nav-icon">✍️</span>Écrire Ordonnance</a>
+        <a href="#" class="nav-item" onclick="showTab('medecin','analyses',this)"><span class="nav-icon">🧪</span>Prescrire Analyse</a>
+      </nav>
+      <button class="btn-logout" onclick="navigate('login')">Déconnexion</button>
+    </aside>
+    <main class="main-content">
+      <!-- MÉDECIN: DASHBOARD -->
+      <div id="medecin-tab-dashboard" class="tab-content active">
+        <div class="page-header">
+          <h1>Bonjour, Dr. Mansouri 🩺</h1>
+          <p>Voici votre journée du 25 Avril 2026</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card accent-blue"><div class="stat-icon">📅</div><div class="stat-val">8</div><div class="stat-label">RDV aujourd'hui</div></div>
+          <div class="stat-card accent-green"><div class="stat-icon">👥</div><div class="stat-val">124</div><div class="stat-label">Patients actifs</div></div>
+          <div class="stat-card accent-orange"><div class="stat-icon">✍️</div><div class="stat-val">5</div><div class="stat-label">Ordonnances ce mois</div></div>
+          <div class="stat-card accent-red"><div class="stat-icon">⚠️</div><div class="stat-val">2</div><div class="stat-label">RDV à confirmer</div></div>
+        </div>
+        <div class="card">
+          <h3>Rendez-vous du jour</h3>
+          <div class="schedule-list">
+            <div class="schedule-item"><span class="sched-time">09:00</span><div class="sched-info"><strong>Ahmed Ben Ali</strong><p>Bilan cardiaque</p></div><span class="badge badge-confirmed">Confirmé</span><button class="btn-primary small" onclick="showTab('medecin','dossiers',null)">Voir dossier</button></div>
+            <div class="schedule-item"><span class="sched-time">10:00</span><div class="sched-info"><strong>Fatma Gharbi</strong><p>Suivi hypertension</p></div><span class="badge badge-confirmed">Confirmé</span><button class="btn-primary small" onclick="showTab('medecin','dossiers',null)">Voir dossier</button></div>
+            <div class="schedule-item"><span class="sched-time">11:30</span><div class="sched-info"><strong>Mohamed Dridi</strong><p>Douleurs thoraciques</p></div><span class="badge badge-pending">En attente</span><button class="btn-primary small" onclick="showTab('medecin','dossiers',null)">Voir dossier</button></div>
+            <div class="schedule-item"><span class="sched-time">14:00</span><div class="sched-info"><strong>Leila Baccouche</strong><p>Consultation initiale</p></div><span class="badge badge-pending">En attente</span><button class="btn-primary small" onclick="showTab('medecin','dossiers',null)">Voir dossier</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MÉDECIN: PLANNING -->
+      <div id="medecin-tab-planning" class="tab-content">
+        <div class="page-header">
+          <h1>Planning — Avril 2026</h1>
+          <button class="btn-primary" onclick="openModal('modal-rdv-edit')">+ Modifier RDV en cas d'incident</button>
+        </div>
+        <div class="card">
+          <div class="calendar-header">
+            <button class="btn-secondary">← Précédent</button>
+            <h3>Semaine du 25 – 30 Avril 2026</h3>
+            <button class="btn-secondary">Suivant →</button>
+          </div>
+          <div class="week-grid">
+            <div class="day-col"><div class="day-header">Lun 25</div><div class="day-slot slot-busy">09:00 — Ahmed B.</div><div class="day-slot slot-busy">10:00 — Fatma G.</div><div class="day-slot slot-free">11:00 — Libre</div><div class="day-slot slot-busy">14:00 — Leila B.</div></div>
+            <div class="day-col"><div class="day-header">Mar 26</div><div class="day-slot slot-free">09:00 — Libre</div><div class="day-slot slot-busy">10:30 — Sami K.</div><div class="day-slot slot-free">14:00 — Libre</div></div>
+            <div class="day-col"><div class="day-header">Mer 27</div><div class="day-slot slot-busy">09:00 — Rania M.</div><div class="day-slot slot-free">11:00 — Libre</div><div class="day-slot slot-free">15:00 — Libre</div></div>
+            <div class="day-col"><div class="day-header">Jeu 28</div><div class="day-slot slot-busy">10:00 — Ahmed B.</div><div class="day-slot slot-free">14:00 — Libre</div></div>
+            <div class="day-col"><div class="day-header">Ven 29</div><div class="day-slot slot-free">Toute journée libre</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MÉDECIN: DOSSIERS -->
+      <div id="medecin-tab-dossiers" class="tab-content">
+        <div class="page-header">
+          <h1>Dossiers Patients</h1>
+          <input type="text" placeholder="🔍 Rechercher un patient..." class="search-input" oninput="filterTable(this)">
+        </div>
+        <div class="card">
+          <table class="data-table" id="patients-table">
+            <thead><tr><th>N° Dossier</th><th>Nom complet</th><th>Date naiss.</th><th>Groupe</th><th>Dernier RDV</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>#D-001</td><td>Ahmed Ben Ali</td><td>12/05/1985</td><td>A+</td><td>15 Mars 2026</td><td><button class="btn-primary small" onclick="openModal('modal-dossier')">Voir</button></td></tr>
+              <tr><td>#D-002</td><td>Fatma Gharbi</td><td>08/11/1972</td><td>O+</td><td>20 Avr 2026</td><td><button class="btn-primary small" onclick="openModal('modal-dossier')">Voir</button></td></tr>
+              <tr><td>#D-003</td><td>Mohamed Dridi</td><td>30/07/1990</td><td>B-</td><td>28 Fév 2026</td><td><button class="btn-primary small" onclick="openModal('modal-dossier')">Voir</button></td></tr>
+              <tr><td>#D-004</td><td>Leila Baccouche</td><td>15/03/1965</td><td>AB+</td><td>—</td><td><button class="btn-primary small" onclick="openModal('modal-dossier')">Voir</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MÉDECIN: ÉCRIRE ORDONNANCE -->
+      <div id="medecin-tab-ordonnances" class="tab-content">
+        <div class="page-header"><h1>Écrire une Ordonnance</h1></div>
+        <div class="card form-card">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Patient</label>
+              <select><option>Ahmed Ben Ali</option><option>Fatma Gharbi</option><option>Mohamed Dridi</option></select>
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" value="2026-04-25">
+            </div>
+          </div>
+          <div id="meds-list">
+            <div class="med-entry">
+              <div class="form-grid med-grid">
+                <div class="form-group"><label>Médicament</label><input type="text" placeholder="Nom du médicament"></div>
+                <div class="form-group"><label>Dosage</label><input type="text" placeholder="ex: 500mg"></div>
+                <div class="form-group"><label>Posologie</label><input type="text" placeholder="ex: 3x/jour"></div>
+                <div class="form-group"><label>Durée</label><input type="text" placeholder="ex: 7 jours"></div>
+              </div>
+            </div>
+          </div>
+          <button class="btn-secondary" onclick="addMedEntry()">+ Ajouter médicament</button>
+          <div class="form-group mt">
+            <label>Notes complémentaires</label>
+            <textarea rows="3" placeholder="Instructions particulières, interactions à surveiller..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="showToast('Ordonnance créée et enregistrée !','success')">Enregistrer l'ordonnance</button>
+            <button class="btn-secondary" onclick="showToast('Export PDF généré !','info')">Exporter PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MÉDECIN: PRESCRIRE ANALYSE -->
+      <div id="medecin-tab-analyses" class="tab-content">
+        <div class="page-header"><h1>Prescrire une Analyse</h1></div>
+        <div class="card form-card">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Patient</label>
+              <select><option>Ahmed Ben Ali</option><option>Fatma Gharbi</option><option>Mohamed Dridi</option></select>
+            </div>
+            <div class="form-group">
+              <label>Type d'analyse</label>
+              <select><option>NFS (Numération Formule Sanguine)</option><option>Glycémie</option><option>Bilan lipidique</option><option>Bilan hépatique</option><option>TSH</option><option>ECG</option><option>Radio thorax</option></select>
+            </div>
+            <div class="form-group">
+              <label>Laboratoire</label>
+              <input type="text" placeholder="Nom du laboratoire">
+            </div>
+            <div class="form-group">
+              <label>Urgence</label>
+              <select><option>Normale</option><option>Urgente</option></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Instructions pour le laboratoire</label>
+            <textarea rows="3" placeholder="Précisions, contexte clinique..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="showToast('Analyse prescrite et notifiée au laboratoire !','success')">Prescrire l'analyse</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCREEN: ASSISTANT DASHBOARD -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-assistant" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span class="brand-icon-sm">✚</span> MediCare</div>
+      <div class="sidebar-user">
+        <div class="avatar ass-avatar">SR</div>
+        <div>
+          <div class="user-name">Samira Riahi</div>
+          <div class="user-role">Assistante médicale</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" onclick="showTab('assistant','dashboard',this)"><span class="nav-icon">⊞</span>Tableau de bord</a>
+        <a href="#" class="nav-item" onclick="showTab('assistant','patients',this)"><span class="nav-icon">👤</span>Enregistrer Patient</a>
+        <a href="#" class="nav-item" onclick="showTab('assistant','rdv',this)"><span class="nav-icon">📅</span>Gérer les RDV</a>
+        <a href="#" class="nav-item" onclick="showTab('assistant','sms',this)"><span class="nav-icon">📲</span>Notifications SMS</a>
+        <a href="#" class="nav-item" onclick="showTab('assistant','validation',this)"><span class="nav-icon">✅</span>Valider Données</a>
+      </nav>
+      <button class="btn-logout" onclick="navigate('login')">Déconnexion</button>
+    </aside>
+    <main class="main-content">
+      <!-- ASSISTANT: DASHBOARD -->
+      <div id="assistant-tab-dashboard" class="tab-content active">
+        <div class="page-header">
+          <h1>Accueil — Assistante 🏥</h1>
+          <p>Gestion des patients et rendez-vous</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card accent-blue"><div class="stat-icon">👤</div><div class="stat-val">12</div><div class="stat-label">Patients enregistrés aujourd'hui</div></div>
+          <div class="stat-card accent-green"><div class="stat-icon">✅</div><div class="stat-val">28</div><div class="stat-label">RDV confirmés</div></div>
+          <div class="stat-card accent-orange"><div class="stat-icon">⏳</div><div class="stat-val">5</div><div class="stat-label">En attente validation</div></div>
+          <div class="stat-card accent-purple"><div class="stat-icon">📲</div><div class="stat-val">43</div><div class="stat-label">SMS envoyés</div></div>
+        </div>
+        <div class="card">
+          <h3>Tâches en attente</h3>
+          <div class="task-list">
+            <div class="task-item"><span class="task-dot orange"></span>Confirmer RDV de Mohamed Dridi (11h30)</div>
+            <div class="task-item"><span class="task-dot red"></span>Enregistrer Leila Baccouche — nouveau patient</div>
+            <div class="task-item"><span class="task-dot blue"></span>Envoyer rappel SMS — RDV du 28 Avr</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSISTANT: ENREGISTRER PATIENT -->
+      <div id="assistant-tab-patients" class="tab-content">
+        <div class="page-header"><h1>Enregistrer un Patient</h1></div>
+        <div class="card form-card">
+          <div class="form-grid">
+            <div class="form-group"><label>Nom</label><input type="text" placeholder="Nom de famille"></div>
+            <div class="form-group"><label>Prénom</label><input type="text" placeholder="Prénom"></div>
+            <div class="form-group"><label>CIN / N° Dossier</label><input type="text" placeholder="12345678"></div>
+            <div class="form-group"><label>Date de naissance</label><input type="date"></div>
+            <div class="form-group"><label>Téléphone</label><input type="tel" placeholder="+216 XX XXX XXX"></div>
+            <div class="form-group"><label>Adresse email</label><input type="email" placeholder="email@exemple.com"></div>
+            <div class="form-group"><label>Groupe sanguin</label><select><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+            <div class="form-group"><label>Médecin référent</label><select><option>Dr. Karim Mansouri</option><option>Dr. Sonia Trabelsi</option><option>Dr. Mehdi Hajji</option></select></div>
+          </div>
+          <div class="form-group">
+            <label>Antécédents médicaux</label>
+            <textarea rows="3" placeholder="Maladies chroniques, allergies, traitements en cours..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="showToast('Patient enregistré avec succès !','success')">Enregistrer</button>
+            <button class="btn-secondary">Réinitialiser</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSISTANT: GÉRER RDV -->
+      <div id="assistant-tab-rdv" class="tab-content">
+        <div class="page-header">
+          <h1>Gestion des Rendez-vous</h1>
+          <button class="btn-primary" onclick="openModal('modal-rdv')">+ Créer RDV</button>
+        </div>
+        <div class="card">
+          <div class="filter-bar">
+            <select onchange="filterRdv(this.value)">
+              <option value="all">Tous les statuts</option>
+              <option value="confirmed">Confirmés</option>
+              <option value="pending">En attente</option>
+              <option value="cancelled">Annulés</option>
+            </select>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Patient</th><th>Médecin</th><th>Date & Heure</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>Ahmed Ben Ali</td><td>Dr. Mansouri</td><td>28 Avr — 10h00</td><td><span class="badge badge-confirmed">Confirmé</span></td><td><button class="btn-icon" onclick="openModal('modal-rdv-edit')">✏️</button><button class="btn-icon danger" onclick="confirmCancel()">✕</button></td></tr>
+              <tr><td>Fatma Gharbi</td><td>Dr. Mansouri</td><td>28 Avr — 14h00</td><td><span class="badge badge-pending">En attente</span></td><td><button class="btn-icon success" onclick="showToast('RDV confirmé !','success')">✓</button><button class="btn-icon danger" onclick="confirmCancel()">✕</button></td></tr>
+              <tr><td>Mohamed Dridi</td><td>Dr. Hajji</td><td>29 Avr — 09h30</td><td><span class="badge badge-pending">En attente</span></td><td><button class="btn-icon success" onclick="showToast('RDV confirmé !','success')">✓</button><button class="btn-icon danger" onclick="confirmCancel()">✕</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ASSISTANT: SMS -->
+      <div id="assistant-tab-sms" class="tab-content">
+        <div class="page-header"><h1>Envoyer des Notifications SMS</h1></div>
+        <div class="grid-2col">
+          <div class="card form-card">
+            <h3>Nouveau SMS</h3>
+            <div class="form-group"><label>Destinataire</label><select><option>Ahmed Ben Ali (+216 98 xxx xxx)</option><option>Fatma Gharbi (+216 72 xxx xxx)</option><option>Tous les patients (RDV demain)</option></select></div>
+            <div class="form-group"><label>Message</label><textarea rows="5" placeholder="Votre message...">Bonjour, nous vous rappelons votre rendez-vous du 28 Avril 2026 à 10h00 avec Dr. Mansouri. Merci de confirmer votre présence.</textarea></div>
+            <button class="btn-primary" onclick="showToast('SMS envoyé avec succès !','success')">📲 Envoyer SMS</button>
+          </div>
+          <div class="card">
+            <h3>Historique envois</h3>
+            <div class="sms-history">
+              <div class="sms-item"><div class="sms-to">Ahmed Ben Ali</div><div class="sms-msg">Rappel RDV 28 Avr 10h00</div><div class="sms-date">Aujourd'hui 08:30</div></div>
+              <div class="sms-item"><div class="sms-to">Fatma Gharbi</div><div class="sms-msg">Confirmation RDV reçue</div><div class="sms-date">Hier 14:15</div></div>
+              <div class="sms-item"><div class="sms-to">Mohamed Dridi</div><div class="sms-msg">RDV modifié — nouvelle heure 11h30</div><div class="sms-date">23 Avr 09:00</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSISTANT: VALIDATION -->
+      <div id="assistant-tab-validation" class="tab-content">
+        <div class="page-header"><h1>Valider les Données Saisies</h1></div>
+        <div class="card">
+          <h3>Données en attente de validation</h3>
+          <div class="validation-list">
+            <div class="validation-item">
+              <div class="val-info">
+                <strong>Nouveau patient : Leila Baccouche</strong>
+                <p>Saisie le 25/04/2026 — Informations personnelles complètes</p>
+              </div>
+              <div class="val-actions">
+                <button class="btn-primary small" onclick="showToast('Données validées !','success')">✓ Valider</button>
+                <button class="btn-secondary small" onclick="showToast('Renvoyé pour correction','warning')">✗ Rejeter</button>
+              </div>
+            </div>
+            <div class="validation-item">
+              <div class="val-info">
+                <strong>Modification RDV : Mohamed Dridi</strong>
+                <p>Changement d'heure : 09h00 → 11h30</p>
+              </div>
+              <div class="val-actions">
+                <button class="btn-primary small" onclick="showToast('Modification validée !','success')">✓ Valider</button>
+                <button class="btn-secondary small" onclick="showToast('Modification rejetée','warning')">✗ Rejeter</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCREEN: ADMIN DASHBOARD -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-admin" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span class="brand-icon-sm">✚</span> MediCare</div>
+      <div class="sidebar-user">
+        <div class="avatar adm-avatar">AD</div>
+        <div>
+          <div class="user-name">Admin Système</div>
+          <div class="user-role">Administrateur</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" onclick="showTab('admin','dashboard',this)"><span class="nav-icon">⊞</span>Tableau de bord</a>
+        <a href="#" class="nav-item" onclick="showTab('admin','validation',this)"><span class="nav-icon">✅</span>Valider Données</a>
+        <a href="#" class="nav-item" onclick="showTab('admin','notifications',this)"><span class="nav-icon">🔔</span>Notifications</a>
+        <a href="#" class="nav-item" onclick="showTab('admin','auth',this)"><span class="nav-icon">🔐</span>Authentifications</a>
+        <a href="#" class="nav-item" onclick="showTab('admin','users',this)"><span class="nav-icon">👥</span>Utilisateurs</a>
+      </nav>
+      <button class="btn-logout" onclick="navigate('login')">Déconnexion</button>
+    </aside>
+    <main class="main-content">
+      <!-- ADMIN: DASHBOARD -->
+      <div id="admin-tab-dashboard" class="tab-content active">
+        <div class="page-header">
+          <h1>Administration Système ⚙️</h1>
+          <p>Vue d'ensemble — MediCare</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card accent-blue"><div class="stat-icon">👥</div><div class="stat-val">287</div><div class="stat-label">Utilisateurs actifs</div></div>
+          <div class="stat-card accent-green"><div class="stat-icon">🔐</div><div class="stat-val">14</div><div class="stat-label">Connexions aujourd'hui</div></div>
+          <div class="stat-card accent-orange"><div class="stat-icon">⚠️</div><div class="stat-val">3</div><div class="stat-label">Alertes système</div></div>
+          <div class="stat-card accent-red"><div class="stat-icon">🚫</div><div class="stat-val">2</div><div class="stat-label">Tentatives bloquées</div></div>
+        </div>
+        <div class="grid-2col">
+          <div class="card">
+            <h3>Activité récente</h3>
+            <div class="activity-log">
+              <div class="log-item"><span class="log-time">08:45</span><span class="log-event">Connexion — Dr. Mansouri</span></div>
+              <div class="log-item"><span class="log-time">09:12</span><span class="log-event">Nouveau patient enregistré — Samira R.</span></div>
+              <div class="log-item"><span class="log-time">09:30</span><span class="log-event">Ordonnance créée — ORD-2026-043</span></div>
+              <div class="log-item"><span class="log-time">10:01</span><span class="log-event">⚠️ Tentative de connexion échouée</span></div>
+              <div class="log-item"><span class="log-time">10:15</span><span class="log-event">SMS envoyés — rappels RDV (12)</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Répartition utilisateurs</h3>
+            <div class="donut-chart-mock">
+              <div class="donut-row"><span class="donut-color" style="background:#3b82f6"></span>Patients — 198</div>
+              <div class="donut-row"><span class="donut-color" style="background:#10b981"></span>Médecins — 45</div>
+              <div class="donut-row"><span class="donut-color" style="background:#f59e0b"></span>Assistants — 38</div>
+              <div class="donut-row"><span class="donut-color" style="background:#ef4444"></span>Admins — 6</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN: VALIDATION -->
+      <div id="admin-tab-validation" class="tab-content">
+        <div class="page-header"><h1>Valider les Données Saisies</h1></div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Type</th><th>Saisie par</th><th>Date saisie</th><th>Description</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>Nouveau patient</td><td>Samira Riahi (Assist.)</td><td>25/04/2026</td><td>Leila Baccouche</td><td><button class="btn-primary small" onclick="showToast('Validé !','success')">Valider</button></td></tr>
+              <tr><td>Modification RDV</td><td>Samira Riahi (Assist.)</td><td>24/04/2026</td><td>RDV Dridi modifié</td><td><button class="btn-primary small" onclick="showToast('Validé !','success')">Valider</button></td></tr>
+              <tr><td>Nouveau médecin</td><td>Admin</td><td>20/04/2026</td><td>Dr. Mehdi Hajji — Généraliste</td><td><button class="btn-primary small" onclick="showToast('Validé !','success')">Valider</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADMIN: NOTIFICATIONS -->
+      <div id="admin-tab-notifications" class="tab-content">
+        <div class="page-header"><h1>Envoyer des Notifications</h1></div>
+        <div class="grid-2col">
+          <div class="card form-card">
+            <h3>Nouvelle notification</h3>
+            <div class="form-group"><label>Destinataires</label><select><option>Tous les utilisateurs</option><option>Tous les patients</option><option>Tous les médecins</option><option>Tous les assistants</option></select></div>
+            <div class="form-group"><label>Canal</label><select><option>In-app + Email</option><option>SMS uniquement</option><option>Email uniquement</option></select></div>
+            <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Contenu de la notification...">Maintenance planifiée le 30/04/2026 de 02h00 à 04h00. Le service sera temporairement indisponible.</textarea></div>
+            <button class="btn-primary" onclick="showToast('Notification envoyée à tous les utilisateurs !','success')">🔔 Envoyer notification</button>
+          </div>
+          <div class="card">
+            <h3>Notifications récentes</h3>
+            <div class="notif-list">
+              <div class="notif-item info"><strong>Mise à jour système</strong><p>Déployée le 20/04/2026</p></div>
+              <div class="notif-item warning"><strong>Maintenance prévue</strong><p>30/04/2026 02h-04h</p></div>
+              <div class="notif-item success"><strong>Nouveau médecin ajouté</strong><p>Dr. Hajji disponible</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN: AUTH -->
+      <div id="admin-tab-auth" class="tab-content">
+        <div class="page-header"><h1>Gestion des Authentifications</h1></div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Utilisateur</th><th>Rôle</th><th>Dernière connexion</th><th>IP</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>Dr. Karim Mansouri</td><td>Médecin</td><td>25/04/2026 08:45</td><td>196.203.x.x</td><td><span class="badge badge-green">Actif</span></td><td><button class="btn-icon danger" onclick="showToast('Compte suspendu','warning')">🔒</button></td></tr>
+              <tr><td>Ahmed Ben Ali</td><td>Patient</td><td>24/04/2026 19:30</td><td>197.10.x.x</td><td><span class="badge badge-green">Actif</span></td><td><button class="btn-icon danger" onclick="showToast('Compte suspendu','warning')">🔒</button></td></tr>
+              <tr><td>Inconnu</td><td>—</td><td>25/04/2026 10:01</td><td>185.x.x.x</td><td><span class="badge badge-red">Bloqué</span></td><td><button class="btn-icon" onclick="showToast('IP débloquée','info')">🔓</button></td></tr>
+              <tr><td>Samira Riahi</td><td>Assistant</td><td>25/04/2026 07:55</td><td>196.200.x.x</td><td><span class="badge badge-green">Actif</span></td><td><button class="btn-icon danger" onclick="showToast('Compte suspendu','warning')">🔒</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADMIN: USERS -->
+      <div id="admin-tab-users" class="tab-content">
+        <div class="page-header">
+          <h1>Gestion des Utilisateurs</h1>
+          <button class="btn-primary" onclick="openModal('modal-add-user')">+ Ajouter utilisateur</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Nom complet</th><th>Email</th><th>Rôle</th><th>Créé le</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>Dr. Karim Mansouri</td><td>k.mansouri@medicare.tn</td><td>Médecin</td><td>01/01/2026</td><td><span class="badge badge-green">Actif</span></td><td><button class="btn-icon" onclick="showToast('Utilisateur modifié','info')">✏️</button><button class="btn-icon danger" onclick="showToast('Utilisateur supprimé','warning')">🗑</button></td></tr>
+              <tr><td>Samira Riahi</td><td>s.riahi@medicare.tn</td><td>Assistant</td><td>15/01/2026</td><td><span class="badge badge-green">Actif</span></td><td><button class="btn-icon" onclick="showToast('Utilisateur modifié','info')">✏️</button><button class="btn-icon danger" onclick="showToast('Utilisateur supprimé','warning')">🗑</button></td></tr>
+              <tr><td>Ahmed Ben Ali</td><td>a.benali@gmail.com</td><td>Patient</td><td>10/02/2026</td><td><span class="badge badge-green">Actif</span></td><td><button class="btn-icon" onclick="showToast('Utilisateur modifié','info')">✏️</button><button class="btn-icon danger" onclick="showToast('Utilisateur supprimé','warning')">🗑</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- MODALS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="modal-rdv" class="modal-overlay" onclick="closeModal(event,this)">
+  <div class="modal">
+    <div class="modal-header"><h3>Réserver un Rendez-vous</h3><button onclick="closeModal(null,'modal-rdv')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Médecin</label><select><option>Dr. Karim Mansouri — Cardiologie</option><option>Dr. Sonia Trabelsi — Dermatologie</option><option>Dr. Mehdi Hajji — Généraliste</option></select></div>
+      <div class="form-group"><label>Date souhaitée</label><input type="date" value="2026-04-28"></div>
+      <div class="form-group"><label>Heure</label><select><option>09:00</option><option>10:00</option><option>11:00</option><option>14:00</option><option>15:00</option><option>16:00</option></select></div>
+      <div class="form-group"><label>Motif</label><textarea rows="2" placeholder="Motif de la consultation..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal(null,'modal-rdv')">Annuler</button>
+      <button class="btn-primary" onclick="closeModal(null,'modal-rdv');showToast('Rendez-vous réservé avec succès !','success')">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-rdv-edit" class="modal-overlay" onclick="closeModal(event,this)">
+  <div class="modal">
+    <div class="modal-header"><h3>Modifier un Rendez-vous</h3><button onclick="closeModal(null,'modal-rdv-edit')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Nouvelle date</label><input type="date" value="2026-04-29"></div>
+      <div class="form-group"><label>Nouvelle heure</label><select><option>09:00</option><option>10:00</option><option selected>11:30</option><option>14:00</option></select></div>
+      <div class="form-group"><label>Motif de modification</label><textarea rows="2" placeholder="Incident, indisponibilité..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal(null,'modal-rdv-edit')">Annuler</button>
+      <button class="btn-primary" onclick="closeModal(null,'modal-rdv-edit');showToast('RDV modifié — SMS envoyé au patient !','success')">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-dossier" class="modal-overlay" onclick="closeModal(event,this)">
+  <div class="modal modal-large">
+    <div class="modal-header"><h3>Dossier Patient — Ahmed Ben Ali</h3><button onclick="closeModal(null,'modal-dossier')">✕</button></div>
+    <div class="modal-body">
+      <div class="dossier-grid">
+        <div class="dossier-section"><h4>Informations personnelles</h4><p><strong>Né le :</strong> 12/05/1985</p><p><strong>Groupe sanguin :</strong> A+</p><p><strong>Tél :</strong> +216 98 123 456</p></div>
+        <div class="dossier-section"><h4>Dernière consultation</h4><p>15 Mars 2026 — Dr. Mansouri</p><p>Bilan cardiaque normal</p></div>
+        <div class="dossier-section"><h4>Traitements en cours</h4><p>• Paracétamol 500mg</p><p>• Amoxicilline 1g</p></div>
+        <div class="dossier-section"><h4>Antécédents</h4><p>Légère hypertension (2020)</p><p>Aucune allergie connue</p></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal(null,'modal-dossier')">Fermer</button>
+      <button class="btn-primary" onclick="showTab('medecin','ordonnances',null);closeModal(null,'modal-dossier')">Écrire ordonnance</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-add-user" class="modal-overlay" onclick="closeModal(event,this)">
+  <div class="modal">
+    <div class="modal-header"><h3>Ajouter un Utilisateur</h3><button onclick="closeModal(null,'modal-add-user')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Nom complet</label><input type="text" placeholder="Nom Prénom"></div>
+      <div class="form-group"><label>Email</label><input type="email" placeholder="email@medicare.tn"></div>
+      <div class="form-group"><label>Rôle</label><select><option>Patient</option><option>Médecin</option><option>Assistant</option><option>Admin</option></select></div>
+      <div class="form-group"><label>Mot de passe temporaire</label><input type="password" placeholder="••••••••"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal(null,'modal-add-user')">Annuler</button>
+      <button class="btn-primary" onclick="closeModal(null,'modal-add-user');showToast('Utilisateur créé — Email envoyé !','success')">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════ */
+/* MEDICARE — APPLICATION LOGIC                       */
+/* ═══════════════════════════════════════════════════ */
+
+let currentRole = 'patient';
+
+// ─── ROLE SWITCHER ───
+document.querySelectorAll('.role-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRole = btn.dataset.role;
+    // Update placeholder email
+    const emailMap = {
+      patient: 'patient@demo.com',
+      medecin: 'medecin@demo.com',
+      assistant: 'assistant@demo.com',
+      admin: 'admin@demo.com'
+    };
+    document.getElementById('login-email').value = emailMap[currentRole];
+  });
+});
+
+// ─── LOGIN ───
+function doLogin() {
+  const email = document.getElementById('login-email').value;
+  if (!email) { showToast('Veuillez saisir un email', 'error'); return; }
+  showToast(`Connexion en tant que ${currentRole}...`, 'info');
+  setTimeout(() => {
+    navigate(currentRole);
+  }, 800);
+}
+
+// ─── NAVIGATION ───
+function navigate(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + screen);
+  if (target) {
+    target.classList.add('active');
+    // Reset to first tab
+    const firstTab = target.querySelector('.tab-content');
+    if (firstTab) {
+      target.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      firstTab.classList.add('active');
+    }
+    // Reset active nav
+    const firstNav = target.querySelector('.nav-item');
+    if (firstNav) {
+      target.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      firstNav.classList.add('active');
+    }
+  }
+}
+
+// ─── TABS ───
+function showTab(screen, tab, el) {
+  const prefix = screen + '-tab-';
+  document.querySelectorAll('[id^="' + prefix + '"]').forEach(t => t.classList.remove('active'));
+  const target = document.getElementById(prefix + tab);
+  if (target) target.classList.add('active');
+
+  if (el) {
+    const screen_el = document.getElementById('screen-' + screen);
+    screen_el.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+  return false;
+}
+
+// ─── MODALS ───
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.add('open');
+}
+
+function closeModal(event, idOrEl) {
+  if (event && event.target !== event.currentTarget) return;
+  const id = typeof idOrEl === 'string' ? idOrEl : null;
+  if (id) {
+    document.getElementById(id).classList.remove('open');
+  } else if (idOrEl && idOrEl.classList) {
+    idOrEl.classList.remove('open');
+  }
+}
+
+// ─── TOAST ───
+let toastTimer;
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  toast.textContent = message;
+  toast.className = 'toast show ' + type;
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3200);
+}
+
+// ─── CANCEL CONFIRM ───
+function confirmCancel() {
+  if (confirm('Confirmer l\'annulation de ce rendez-vous ?')) {
+    showToast('Rendez-vous annulé — SMS envoyé au patient', 'warning');
+  }
+}
+
+// ─── FILTER TABLE ───
+function filterTable(input) {
+  const val = input.value.toLowerCase();
+  document.querySelectorAll('#patients-table tbody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
+  });
+}
+
+// ─── ADD MED ENTRY ───
+function addMedEntry() {
+  const container = document.getElementById('meds-list');
+  const entry = document.createElement('div');
+  entry.className = 'med-entry';
+  entry.innerHTML = `
+    <div class="form-grid med-grid">
+      <div class="form-group"><label>Médicament</label><input type="text" placeholder="Nom du médicament"></div>
+      <div class="form-group"><label>Dosage</label><input type="text" placeholder="ex: 500mg"></div>
+      <div class="form-group"><label>Posologie</label><input type="text" placeholder="ex: 3x/jour"></div>
+      <div class="form-group"><label>Durée</label><input type="text" placeholder="ex: 7 jours"></div>
+    </div>
+    <button class="btn-secondary small" onclick="this.closest('.med-entry').remove()" style="margin-top:8px">Supprimer</button>
+  `;
+  container.appendChild(entry);
+}
+
+// ─── KEYBOARD SHORTCUT ───
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+// ─── ENTER TO LOGIN ───
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const loginScreen = document.getElementById('screen-login');
+    if (loginScreen.classList.contains('active')) doLogin();
+  }
+});
+
+</script>
+</body>
+</html>
